@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+
+if (!ini_get('date.timezone')) {
+	ini_set('date.timezone', 'UTC');
+}
+
+$autoloaders = [
+		__DIR__ . '/../../autoload.php',
+		__DIR__ . '/../vendor/autoload.php',
+		__DIR__ . '/vendor/autoload.php'
+];
+
+foreach ($autoloaders as $autoloader) {
+	if (file_exists($autoloader)) {
+		require_once($autoloader);
+		break;
+	}
+}
+
+if (!class_exists(\imnotjames\Cronic\CLI::class)) {
+	fwrite(STDERR, 'Something went wrong trying to run Cronic: Could not find the cronic libraries.');
+	die(1);
+}
+
+(new \imnotjames\Cronic\CLI)->run();

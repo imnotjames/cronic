@@ -1,0 +1,34 @@
+{
+    "name": "imnotjames/cronic",
+    "version": "0.0.1",
+    "description": "A Cron annotation helper.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "James Ward",
+            "email": "james@notjam.es"
+        }
+    ],
+    "scripts": {
+      "test": [
+        "php vendor/bin/phpunit --color"
+      ]
+    },
+    "require": {
+        "mtdowling/cron-expression": "^1.2",
+        "hanneskod/classtools": "~1.0",
+        "splitbrain/php-cli": "^1.0"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "^6.0"
+    },
+    "bin": [
+      "cronic"
+    ],
+    "autoload": {
+      "psr-4": {
+        "imnotjames\\Cronic\\": "src/"
+      }
+    }
+}
