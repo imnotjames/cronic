@@ -19,4 +19,11 @@ class CronTest extends TestCase {
     $cron = Cron::fromDirectory(self::FIXTURE_DIRECTORY . '/testWeirdAnnotations/');
     $cron->execute();
   }
+
+  public function testInheritedMethods() {
+    $this->expectOutputString('SuccessC');
+
+    $cron = Cron::fromDirectory(self::FIXTURE_DIRECTORY . '/testInheritedMethods/');
+    $cron->execute();
+  }
 }

@@ -100,6 +100,12 @@ class Cron {
     }
 
     foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+
+      if ($class->getName() != $method->getDeclaringClass()->getName()) {
+        // Only run the cron on the classes that have actually implemented method
+        continue;
+      }
+
       $values = $this->getCronAnnotations($method);
 
       $values = array_filter($values);
