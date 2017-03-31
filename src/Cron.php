@@ -7,7 +7,9 @@ use Symfony\Component\Finder\SplFileInfo;
 
 use hanneskod\classtools\Iterator\ClassIterator;
 
+use ReflectionClass;
 use ReflectionMethod;
+use InvalidArgumentException;
 
 class Cron {
   private $jobs = [];
@@ -26,7 +28,7 @@ class Cron {
     $classes = [];
     // Print all classes, interfaces and traits in 'src'
     foreach ($classIterator as $class) {
-      $classes[] = $class->getName();
+      $classes[] = $class;
     }
 
     return $classes;
@@ -88,22 +90,16 @@ class Cron {
     return new Cron(self::findClassesInNamespace($namespace));
   }
 
-  private function getJobFromClass($className) {
-    $methodNames = get_class_methods($className);
-
+  private function getJobFromClass($class) {
     $jobs = [];
 
-    foreach ($methodNames as $methodName) {
-      if (!method_exists($className, $methodName)) {
-        continue;
-      }
+    if (is_string($class)) {
+      $class = new ReflectionClass($class);
+    } else if (!$class instanceof ReflectionClass) {
+      throw new InvalidArgumentException('classes passed to cron must be a ReflectionClass or the name of a class.');
+    }
 
-      $method = new ReflectionMethod($className, $methodName);
-
-      if (!$method->isPublic()) {
-        continue;
-      }
-
+    foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
       $values = $this->getCronAnnotations($method);
 
       $values = array_filter($values);
