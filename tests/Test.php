@@ -26,4 +26,18 @@ class CronTest extends TestCase {
     $cron = Cron::fromDirectory(self::FIXTURE_DIRECTORY . '/testInheritedMethods/');
     $cron->execute();
   }
+
+  public function testStaticMethods() {
+    $this->expectOutputString('SuccessE');
+
+    $cron = Cron::fromDirectory(self::FIXTURE_DIRECTORY . '/testStaticMethods/');
+    $cron->execute();
+  }
+
+  public function testFailureBecauseConstructor() {
+    $this->expectException(InvalidArgumentException::class);
+
+    $cron = Cron::fromDirectory(self::FIXTURE_DIRECTORY . '/testFailureBecauseConstructor/');
+    $cron->execute();
+  }
 }

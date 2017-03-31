@@ -99,6 +99,12 @@ class Cron {
       throw new InvalidArgumentException('classes passed to cron must be a ReflectionClass or the name of a class.');
     }
 
+    $constructor = $class->getConstructor();
+
+    if (empty($constructor) || empty(array_filter($constructor->getParameters(), function($p) { return !$p->isOptional(); }))) {
+      $instance = $class->newInstance();
+    }
+
     foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
 
       if ($class->getName() != $method->getDeclaringClass()->getName()) {
@@ -114,7 +120,15 @@ class Cron {
         continue;
       }
 
-      $jobs[] = new Job($values, [ $className, $methodName ]);
+      if ($method->isStatic()) {
+        $closure = $method->getClosure();
+      } else if (!empty($instance)) {
+        $closure = $method->getClosure($instance);
+      } else {
+        throw new InvalidArgumentException('Cron methods must either be static or be in a class with a constructor without required parameters.');
+      }
+
+      $jobs[] = new Job($values, $closure);
     }
 
     return $jobs;
