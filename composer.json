@@ -1,6 +1,6 @@
 {
     "name": "imnotjames/cronic",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "A Cron annotation helper.",
     "type": "library",
     "license": "MIT",
