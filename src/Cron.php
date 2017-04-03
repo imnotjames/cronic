@@ -90,6 +90,17 @@ class Cron {
     return new Cron(self::findClassesInNamespace($namespace));
   }
 
+  private function hasRequiredParameters(ReflectionMethod $method) {
+    $parameters = $method->getParameters();
+
+    $requiredParameters = array_filter(
+      $parameters,
+      function($p) { return !$p->isOptional(); }
+    );
+
+    return !empty($requiredParameters);
+  }
+
   private function getJobFromClass($class) {
     $jobs = [];
 
@@ -101,7 +112,7 @@ class Cron {
 
     $constructor = $class->getConstructor();
 
-    if (empty($constructor) || empty(array_filter($constructor->getParameters(), function($p) { return !$p->isOptional(); }))) {
+    if (empty($constructor) || !$this->hasRequiredParameters($constructor)) {
       $instance = $class->newInstance();
     }
 
@@ -118,6 +129,10 @@ class Cron {
 
       if (empty($values)) {
         continue;
+      }
+
+      if ($this->hasRequiredParameters($method)) {
+        throw new InvalidArgumentException('Cron methods must not have any required parameters.');
       }
 
       if ($method->isStatic()) {
